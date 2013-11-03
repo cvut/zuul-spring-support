@@ -58,8 +58,9 @@ import static org.springframework.http.HttpMethod.POST;
 
 
 /**
- * Implementation of token services for standalone OAuth2 Resource Server using
- * remote Authorization Server to obtain authentication for Access Tokens.
+ * Implementation of {@link ResourceServerTokenServices} for a standalone OAuth2
+ * resource server (provider) using a remote authorization server to obtain
+ * an authentication for access tokens.
  *
  * <p>Please note that this communication between Resource Server and
  * Authorization Server is beyond the scope of the RFC 6749 specification.
@@ -68,9 +69,9 @@ import static org.springframework.http.HttpMethod.POST;
  *
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-public class StandaloneResourceServerTokenServices implements ResourceServerTokenServices, InitializingBean {
+public class StandaloneResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StandaloneResourceServerTokenServices.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StandaloneResourceTokenServices.class);
     private static final GrantedAuthority DEFAULT_USER_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
 
     private String checkTokenEndpointUrl;

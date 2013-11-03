@@ -17,7 +17,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-class StandaloneResourceServerTokenServicesTest extends Specification {
+class StandaloneResourceTokenServicesTest extends Specification {
 
     static ENDPOINT_URL = "http://oauth-server.dev/api/check-token"
     static TOKEN_PARAM = "token_param"
@@ -114,7 +114,7 @@ class StandaloneResourceServerTokenServicesTest extends Specification {
     }
 
     def newTokenServices(method = HttpMethod.POST) {
-        def service = new StandaloneResourceServerTokenServices(
+        def service = new StandaloneResourceTokenServices(
                 restTemplate: restTemplate,
                 checkTokenEndpointUrl: ENDPOINT_URL,
                 tokenParameterName: TOKEN_PARAM,

@@ -30,7 +30,7 @@ import java.io.IOException;
 
 /**
  * Decorator of ResponseErrorHandler used in
- * {@link StandaloneResourceServerTokenServices} that handles HTTP status 409
+ * {@link StandaloneResourceTokenServices} that handles HTTP status 409
  * and delegates all other to the decorated ErrorHandler.
  *
  * @author Jakub Jirutka <jakub@jirutka.cz>
