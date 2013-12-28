@@ -21,26 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cz.cvut.zuul.oarp.spring;
+package cz.cvut.zuul.support.spring.provider;
 
-import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.ResponseErrorHandler;
+
+import java.io.IOException;
 
 /**
+ * Decorator of ResponseErrorHandler used in
+ * {@link RemoteResourceTokenServices} that handles HTTP status 409
+ * and delegates all other to the decorated ErrorHandler.
+ *
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-public class InvalidClientTokenException extends InvalidTokenException {
+public class TokenValidationErrorHandler implements ResponseErrorHandler {
 
-    public InvalidClientTokenException(String msg) {
-        super(msg);
+    private ResponseErrorHandler parentHandler;
+
+
+    public TokenValidationErrorHandler(ResponseErrorHandler parentHandler) {
+        this.parentHandler = parentHandler;
     }
 
-    @Override
-    public String getOAuth2ErrorCode() {
-        return getMessage();
+
+    public boolean hasError(ClientHttpResponse response) throws IOException {
+        return parentHandler.hasError(response);
     }
 
-    @Override
-    public int getHttpErrorCode() {
-        return 409;
+    public void handleError(ClientHttpResponse response) throws IOException {
+        switch (response.getStatusCode()) {
+            case CONFLICT:
+                throw new InvalidClientTokenException(response.getStatusText());
+            default:
+                parentHandler.handleError(response);
+        }
     }
 }

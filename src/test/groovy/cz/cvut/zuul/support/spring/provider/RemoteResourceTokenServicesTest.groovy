@@ -1,4 +1,4 @@
-package cz.cvut.zuul.oarp.spring
+package cz.cvut.zuul.support.spring.provider
 
 import org.codehaus.jackson.map.ObjectMapper
 import org.springframework.http.HttpMethod
@@ -17,7 +17,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 /**
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-class StandaloneResourceTokenServicesTest extends Specification {
+class RemoteResourceTokenServicesTest extends Specification {
 
     static ENDPOINT_URL = "http://oauth-server.dev/api/check-token"
     static TOKEN_PARAM = "token_param"
@@ -114,7 +114,7 @@ class StandaloneResourceTokenServicesTest extends Specification {
     }
 
     def newTokenServices(method = HttpMethod.POST) {
-        def service = new StandaloneResourceTokenServices(
+        def service = new RemoteResourceTokenServices(
                 restTemplate: restTemplate,
                 checkTokenEndpointUrl: ENDPOINT_URL,
                 tokenParameterName: TOKEN_PARAM,

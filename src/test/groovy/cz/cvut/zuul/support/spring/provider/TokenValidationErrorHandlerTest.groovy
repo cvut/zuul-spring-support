@@ -1,4 +1,4 @@
-package cz.cvut.zuul.oarp.spring
+package cz.cvut.zuul.support.spring.provider
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.ClientHttpResponse

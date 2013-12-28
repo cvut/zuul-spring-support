@@ -21,9 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cz.cvut.zuul.oarp.spring.config;
+package cz.cvut.zuul.support.spring.provider;
 
-import cz.cvut.zuul.oarp.spring.StandaloneResourceTokenServices;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -35,13 +34,13 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 
 /**
- * {@code SecurityBuilder} used to create a {@link cz.cvut.zuul.oarp.spring.StandaloneResourceTokenServices}.
+ * {@code SecurityBuilder} used to create a {@link RemoteResourceTokenServices}.
  *
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<StandaloneResourceTokenServices> {
+public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<RemoteResourceTokenServices> {
 
-    private StandaloneResourceTokenServices tokenServices = new StandaloneResourceTokenServices();
+    private RemoteResourceTokenServices tokenServices = new RemoteResourceTokenServices();
     private ClientCredentialsResourceDetails resourceDetails;
     private RestTemplate restTemplate;
     private boolean secured = false;
@@ -51,7 +50,7 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
      * URL of the resource at OAuth2 authorization server that will be used to
      * obtain authentication info for Access Tokens received from clients.
      */
-    public StandaloneResourceTokenServicesBuilder checkTokenEndpointUri(String checkTokenEndpointUri) {
+    public RemoteResourceTokenServicesBuilder checkTokenEndpointUri(String checkTokenEndpointUri) {
         tokenServices.setCheckTokenEndpointUrl(checkTokenEndpointUri);
         return this;
     }
@@ -60,7 +59,7 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
      * Name of URL query parameter (GET) or request body attribute (POST)
      * that holds Access Token value. Default is <tt>access_token</tt>.
      */
-    public StandaloneResourceTokenServicesBuilder tokenParameterName(String parameterName) {
+    public RemoteResourceTokenServicesBuilder tokenParameterName(String parameterName) {
         tokenServices.setTokenParameterName(parameterName);
         return this;
     }
@@ -71,7 +70,7 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
      *
      * @param requestMethod GET or POST
      */
-    public StandaloneResourceTokenServicesBuilder requestMethod(HttpMethod requestMethod) {
+    public RemoteResourceTokenServicesBuilder requestMethod(HttpMethod requestMethod) {
         tokenServices.setMethod(requestMethod);
         return this;
     }
@@ -80,7 +79,7 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
      * Instance of {@link RestTemplate}, or {@link org.springframework.security.oauth2.client.OAuth2RestTemplate}
      * to access Check Token Endpoint. If provided then {@link #secured()} will be ignored.
      */
-    public StandaloneResourceTokenServicesBuilder restTemplate(RestTemplate restTemplate) {
+    public RemoteResourceTokenServicesBuilder restTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         return this;
     }
@@ -93,7 +92,7 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
         return new ResourceDetailsBuilder();
     }
 
-    public StandaloneResourceTokenServices build() {
+    public RemoteResourceTokenServices build() {
         if (secured) {
             Assert.hasText(resourceDetails.getClientId(), "A clientId must be supplied");
             Assert.hasText(resourceDetails.getClientSecret(), "A clientSecret must be supplied");
@@ -161,12 +160,12 @@ public class StandaloneResourceTokenServicesBuilder implements SecurityBuilder<S
             return this;
         }
 
-        public StandaloneResourceTokenServicesBuilder and() {
-            return StandaloneResourceTokenServicesBuilder.this;
+        public RemoteResourceTokenServicesBuilder and() {
+            return RemoteResourceTokenServicesBuilder.this;
         }
 
-        public StandaloneResourceTokenServices build() {
-            return StandaloneResourceTokenServicesBuilder.this.build();
+        public RemoteResourceTokenServices build() {
+            return RemoteResourceTokenServicesBuilder.this.build();
         }
     }
 }

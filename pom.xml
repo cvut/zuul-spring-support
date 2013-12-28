@@ -14,12 +14,12 @@
 
     <!--//////////////////// ABOUT ////////////////////-->
 
-    <artifactId>zuul-oauth-provider-spring</artifactId>
+    <artifactId>zuul-spring-support</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Zuul OAuth Provider for Spring</name>
-    <description>Support classes for Resource Provider based on Spring Security OAuth2</description>
+    <name>Zuul Spring Support</name>
+    <description>Support classes for OAuth resource providers and clients based on Spring Security OAuth2.</description>
 
 
     <!--//////////////////// DEPENDENCIES ////////////////////-->
@@ -48,11 +48,6 @@
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2-javaconfig</artifactId>
         </dependency>
 
         <dependency>

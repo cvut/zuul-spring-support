@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cz.cvut.zuul.oarp.spring;
+package cz.cvut.zuul.support.spring.provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,20 +58,20 @@ import static org.springframework.http.HttpMethod.POST;
 
 
 /**
- * Implementation of {@link ResourceServerTokenServices} for a standalone OAuth2
- * resource server (provider) using a remote authorization server to obtain
- * an authentication for access tokens.
+ * Implementation of {@link ResourceServerTokenServices} for a standalone
+ * OAuth 2.0 resource server (provider) using a remote authorization server to
+ * obtain an authentication for access tokens.
  *
  * <p>Please note that this communication between Resource Server and
  * Authorization Server is beyond the scope of the RFC 6749 specification.
  * Therefore particular implementations of the Check Token Endpoint may vary
- * on various OAuth2 authorization servers.</p>
+ * on various OAuth 2.0 authorization servers.</p>
  *
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */
-public class StandaloneResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
+public class RemoteResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StandaloneResourceTokenServices.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoteResourceTokenServices.class);
     private static final GrantedAuthority DEFAULT_USER_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
 
     private String checkTokenEndpointUrl;

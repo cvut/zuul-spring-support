@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <logger name="cz.cvut.zuul.oarp" level="WARN" />
+    <logger name="cz.cvut.zuul.support.spring" level="INFO" />
 
     <root level="WARN">
         <appender-ref ref="STDOUT" />

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cz.cvut.zuul.oarp.spring.config;
+package cz.cvut.zuul.support.spring.provider;
 
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -73,7 +73,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
  *
  * <pre>http.apply((SecurityConfigurerAdapter) new OAuth2ResourceServerConfigurer())</pre>
  *
- * @see cz.cvut.zuul.oarp.spring.config.OAuth2ResourceServerConfigurerAdapter
+ * @see OAuth2ResourceServerConfigurerAdapter
  *
  * @author Jakub Jirutka <jakub@jirutka.cz>
  */

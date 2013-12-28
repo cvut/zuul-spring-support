@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cz.cvut.zuul.oarp.spring;
+package cz.cvut.zuul.support.spring.provider;
 
 import lombok.Data;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
