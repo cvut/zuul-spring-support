@@ -39,7 +39,7 @@ For a complete configuration see [this sample][provider-security.xml].
 
 ### Java-based configuration
 
-If you prefer Java-based configuration instead, then you can simply extend our [OAuth2ResourceServerConfigurerAdapter][], define security rules and provide your `ResourceServerTokenServices`… that’s all you need to secure resource provider (and register Spring’s `DelegatingFilterProxy` of course)! There’s also a convenient [RemoteResourceTokenServicesBuilder][] for `RemoteResourceTokenServices`.
+If you prefer Java-based configuration instead, then you can simply extend our [OAuth2ResourceServerConfigurerAdapter][], define security rules and provide your `ResourceServerTokenServices`… that’s all you need to secure resource provider (and register [springSecurityFilterChain][] of course)! There’s also a convenient [RemoteResourceTokenServicesBuilder][] for [RemoteResourceTokenServices][].
 
 ```java
 @Configuration
@@ -48,7 +48,7 @@ public class SecurityConfig extends OAuth2ResourceServerConfigurerAdapter {
 
     protected ResourceServerTokenServices getResourceServerTokenServices() {
         return new RemoteResourceTokenServicesBuilder()
-                .checkTokenEndpointUri( "https://oaas.example.org/oauth/check-token" )
+                .checkTokenEndpointUri( "https://oaas.example.org/api/v1/check-token" )
                 .secured()
                     .clientId( "264ff434-1d2e-46b9-a3c8-fa7d182b7190" )
                     .clientSecret( "kahc2fai1eo6uip5ied2deishei5ooNg" )
@@ -87,8 +87,9 @@ new OAuth2RestTemplateBuilder()
 
 [spring-security-oauth]: http://projects.spring.io/spring-security-oauth
 [ResourceServerTokenServices]: http://docs.spring.io/spring-security/oauth/apidocs/org/springframework/security/oauth2/provider/token/ResourceServerTokenServices.html
-[RemoteResourceTokenServices]: /cvut/zuul-spring-support/blob/master/src/main/java/cz/cvut/zuul/support/spring/provider/RemoteResourceTokenServices.java
-[provider-security.xml]: /cvut/zuul-samples/blob/master/spring-provider/src/main/webapp/WEB-INF/spring/security.xml
-[OAuth2ResourceServerConfigurerAdapter]: /cvut/zuul-spring-support/blob/master/src/main/java/cz/cvut/zuul/support/spring/provider/OAuth2ResourceServerConfigurerAdapter.java
-[RemoteResourceTokenServicesBuilder]: /cvut/zuul-spring-support/blob/master/src/main/java/cz/cvut/zuul/support/spring/provider/RemoteResourceTokenServicesBuilder.java
-[OAuth2RestTemplateBuilder]: /cvut/zuul-spring-support/blob/master/src/main/java/cz/cvut/zuul/support/spring/client/OAuth2RestTemplateBuilder.java
+[RemoteResourceTokenServices]: /src/main/java/cz/cvut/zuul/support/spring/provider/RemoteResourceTokenServices.java
+[provider-security.xml]: https://github.com/cvut/zuul-samples/blob/master/spring-provider/src/main/webapp/WEB-INF/spring/security.xml
+[OAuth2ResourceServerConfigurerAdapter]: /src/main/java/cz/cvut/zuul/support/spring/provider/OAuth2ResourceServerConfigurerAdapter.java
+[springSecurityFilterChain]: http://docs.spring.io/spring-security/site/docs/3.2.x/reference/htmlsingle/#ns-web-xml
+[RemoteResourceTokenServicesBuilder]: /src/main/java/cz/cvut/zuul/support/spring/provider/RemoteResourceTokenServicesBuilder.java
+[OAuth2RestTemplateBuilder]: /src/main/java/cz/cvut/zuul/support/spring/client/OAuth2RestTemplateBuilder.java
