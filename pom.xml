@@ -21,6 +21,16 @@
     <name>Zuul Spring Support</name>
     <description>Support classes for OAuth resource providers and clients based on Spring Security OAuth2.</description>
 
+    <scm>
+        <url>https://github.com/cvut/zuul-spring-support</url>
+        <connection>scm:git:ssh://git@github.com:cvut/zuul-spring-support.git</connection>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/cvut/zuul-spring-support/issues</url>
+    </issueManagement>
+
 
     <!--//////////////////// DEPENDENCIES ////////////////////-->
 
