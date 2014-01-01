@@ -35,8 +35,6 @@ import java.util.Arrays;
 
 /**
  * {@code SecurityBuilder} used to create a {@link RemoteResourceTokenServices}.
- *
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<RemoteResourceTokenServices> {
 

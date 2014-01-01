@@ -28,9 +28,6 @@ import cz.cvut.zuul.support.spring.client.OAuth2ResourceDetailsBuilder.ClientCre
 import cz.cvut.zuul.support.spring.client.OAuth2ResourceDetailsBuilder.ImplicitResourceBuilder;
 import cz.cvut.zuul.support.spring.client.OAuth2ResourceDetailsBuilder.ResourceOwnerPasswordResourceBuilder;
 
-/**
- * @author Jakub Jirutka <jakub@jirutka.cz>
- */
 public class OAuth2RestTemplateBuilder {
 
     public AuthorizationCodeResourceBuilder authorizationCodeGrant() {

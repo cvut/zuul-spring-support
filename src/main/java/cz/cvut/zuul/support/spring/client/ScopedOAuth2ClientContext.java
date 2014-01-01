@@ -48,8 +48,6 @@ import static org.springframework.web.context.request.RequestContextHolder.curre
  * to allow easy use in java-based configuration.</p>
  *
  * TODO unit tests
- *
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 public class ScopedOAuth2ClientContext implements OAuth2ClientContext {
 

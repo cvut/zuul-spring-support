@@ -14,9 +14,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
 
-/**
- * @author Jakub Jirutka <jakub@jirutka.cz>
- */
 class RemoteResourceTokenServicesTest extends Specification {
 
     static ENDPOINT_URL = "http://oauth-server.dev/api/check-token"

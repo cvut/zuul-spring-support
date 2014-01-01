@@ -6,9 +6,6 @@ import org.springframework.mock.http.client.MockClientHttpResponse
 import org.springframework.web.client.ResponseErrorHandler
 import spock.lang.Specification
 
-/**
- * @author Jakub Jirutka <jakub@jirutka.cz>
- */
 class TokenValidationErrorHandlerTest extends Specification {
 
     def parentHandler = Mock(ResponseErrorHandler)

@@ -66,8 +66,6 @@ import static org.springframework.http.HttpMethod.POST;
  * Authorization Server is beyond the scope of the RFC 6749 specification.
  * Therefore particular implementations of the Check Token Endpoint may vary
  * on various OAuth 2.0 authorization servers.</p>
- *
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 public class RemoteResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
 

@@ -48,7 +48,6 @@ import java.util.Arrays;
  * plain Java. :/</p>
  *
  * @see OAuth2RestTemplateBuilder
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 @SuppressWarnings("unchecked")
 abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuilder<B>> {

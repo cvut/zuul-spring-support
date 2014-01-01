@@ -74,8 +74,6 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
  * <pre>http.apply((SecurityConfigurerAdapter) new OAuth2ResourceServerConfigurer())</pre>
  *
  * @see OAuth2ResourceServerConfigurerAdapter
- *
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 public class OAuth2ResourceServerConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 

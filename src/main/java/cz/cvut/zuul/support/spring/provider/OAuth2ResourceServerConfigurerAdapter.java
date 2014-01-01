@@ -55,8 +55,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
  * by overriding methods.
  *
  * @see org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
- *
- * @author Jakub Jirutka <jakub@jirutka.cz>
  */
 @Order(100)
 public abstract class OAuth2ResourceServerConfigurerAdapter implements WebSecurityConfigurer<WebSecurity> {

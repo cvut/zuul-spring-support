@@ -25,9 +25,6 @@ package cz.cvut.zuul.support.spring.provider;
 
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 
-/**
- * @author Jakub Jirutka <jakub@jirutka.cz>
- */
 public class InvalidClientTokenException extends InvalidTokenException {
 
     public InvalidClientTokenException(String msg) {
