@@ -1,4 +1,4 @@
-Zuul Spring Support
+Zuul Spring Support [![Build Status](https://travis-ci.org/cvut/zuul-spring-support.png)](https://travis-ci.org/cvut/zuul-spring-support)
 ===================
 
 This project provides some convenient classes for OAuth 2.0 resource providers and clients implemented with [Spring Security OAuth][spring-security-oauth].
