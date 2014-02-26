@@ -13,24 +13,23 @@ If you’re using Zuul OAAS (and potentially other authorization servers), there
 
 ### XML configuration
 
-There’s an example of using `oauth:resource-server` with `RemoteResourceTokenServices`. The OAAS “check token endpoint” is itself secured with OAuth 2.0.
+There’s an example of using `oauth:resource-server` with `RemoteResourceTokenServices`. The OAAS TokenInfo endpoint is itself secured with OAuth 2.0.
 
 ```xml
     <oauth:resource-server id="resourceServerFilter"
            token-services-ref="tokenServices" />
 
     <bean id="tokenServices" class="cz.cvut.zuul.support.spring.provider.RemoteResourceTokenServices"
-          p:restTemplate-ref="checkTokenRestTemplate"
-          p:checkTokenEndpointUrl="https://oaas.example.org/oauth/check-token"
-          p:method="POST" />
+          p:restTemplate-ref="tokenInfoRestTemplate"
+          p:tokenInfoEndpointUrl="https://oaas.example.org/api/v1/tokeninfo" />
 
-    <oauth:rest-template id="checkTokenRestTemplate" resource="check-token-resource" />
+    <oauth:rest-template id="tokenInfoRestTemplate" resource="tokeninfo-resource" />
 
-    <oauth:resource id="check-token-resource"
+    <oauth:resource id="tokeninfo-resource"
            type="client_credentials"
            client-id="264ff434-1d2e-46b9-a3c8-fa7d182b7190"
            client-secret="kahc2fai1eo6uip5ied2deishei5ooNg"
-           scope="urn:zuul:oauth:oaas:check-token"
+           scope="urn:zuul:oauth:oaas:tokeninfo"
            access-token-uri="https://oaas.example.org/oauth/token"
            client-authentication-scheme="form" />
 ```
@@ -48,11 +47,11 @@ public class SecurityConfig extends OAuth2ResourceServerConfigurerAdapter {
 
     protected ResourceServerTokenServices getResourceServerTokenServices() {
         return new RemoteResourceTokenServicesBuilder()
-                .checkTokenEndpointUri( "https://oaas.example.org/api/v1/check-token" )
+                .tokenInfoEndpointUri( "https://oaas.example.org/api/v1/tokeninfo" )
                 .secured()
                     .clientId( "264ff434-1d2e-46b9-a3c8-fa7d182b7190" )
                     .clientSecret( "kahc2fai1eo6uip5ied2deishei5ooNg" )
-                    .scope( "urn:zuul:oauth:oaas:check-token" )
+                    .scope( "urn:zuul:oauth:oaas:tokeninfo" )
                     .accessTokenUri( "https://oaas.example.org/oauth/token" )
                     .clientAuthenticationScheme( AuthenticationScheme.form )
                 .build();
@@ -83,6 +82,11 @@ new OAuth2RestTemplateBuilder()
             .clientAuthenticationScheme( AuthenticationScheme.form )
         .build();
 ```
+
+License
+-------
+
+This project is licensed under [MIT license](http://opensource.org/licenses/MIT).
 
 
 [spring-security-oauth]: http://projects.spring.io/spring-security-oauth

@@ -23,7 +23,6 @@
  */
 package cz.cvut.zuul.support.spring.provider;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -48,8 +47,8 @@ public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<Remot
      * URL of the resource at OAuth2 authorization server that will be used to
      * obtain authentication info for Access Tokens received from clients.
      */
-    public RemoteResourceTokenServicesBuilder checkTokenEndpointUri(String checkTokenEndpointUri) {
-        tokenServices.setCheckTokenEndpointUrl(checkTokenEndpointUri);
+    public RemoteResourceTokenServicesBuilder tokenInfoEndpointUri(String tokenInfoEndpointUri) {
+        tokenServices.setTokenInfoEndpointUrl(tokenInfoEndpointUri);
         return this;
     }
 
@@ -63,19 +62,8 @@ public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<Remot
     }
 
     /**
-     * Which HTTP method use to request authentication info for Access Token at
-     * Check Token Endpoint? Default is POST.
-     *
-     * @param requestMethod GET or POST
-     */
-    public RemoteResourceTokenServicesBuilder requestMethod(HttpMethod requestMethod) {
-        tokenServices.setMethod(requestMethod);
-        return this;
-    }
-
-    /**
      * Instance of {@link RestTemplate}, or {@link org.springframework.security.oauth2.client.OAuth2RestTemplate}
-     * to access Check Token Endpoint. If provided then {@link #secured()} will be ignored.
+     * to access TokenInfo Endpoint. If provided then {@link #secured()} will be ignored.
      */
     public RemoteResourceTokenServicesBuilder restTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -83,7 +71,7 @@ public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<Remot
     }
 
     /**
-     * Configure OAuth 2.0 parameters for a secured Check Token resource.
+     * Configure OAuth 2.0 parameters for a secured TokenInfo resource.
      */
     public ResourceDetailsBuilder secured() {
         this.secured = true;
@@ -110,7 +98,7 @@ public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<Remot
 
     public class ResourceDetailsBuilder {
 
-        private static final String DEFAULT_SCOPE = "urn:zuul:oaas:check-token";
+        private static final String DEFAULT_SCOPE = "urn:zuul:oaas:tokeninfo";
 
         private ResourceDetailsBuilder() {
             resourceDetails = new ClientCredentialsResourceDetails();
@@ -134,8 +122,8 @@ public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<Remot
         }
 
         /**
-         * The scope required by the OAAS to access the Check Token Endpoint.
-         * The default scope is <tt>urn:zuul:oaas:check-token</tt>.
+         * The scope required by the OAAS to access the TokenInfo Endpoint.
+         * The default scope is <tt>urn:zuul:oaas:tokeninfo</tt>.
          */
         public ResourceDetailsBuilder scope(String... scopes) {
             resourceDetails.setScope(Arrays.asList(scopes));

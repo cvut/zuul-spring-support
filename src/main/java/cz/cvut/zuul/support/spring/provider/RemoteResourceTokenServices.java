@@ -27,10 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -43,8 +39,6 @@ import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,8 +47,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 
 
 /**
@@ -64,7 +56,7 @@ import static org.springframework.http.HttpMethod.POST;
  *
  * <p>Please note that this communication between Resource Server and
  * Authorization Server is beyond the scope of the RFC 6749 specification.
- * Therefore particular implementations of the Check Token Endpoint may vary
+ * Therefore particular implementations of the TokenInfo Endpoint may vary
  * on various OAuth 2.0 authorization servers.</p>
  */
 public class RemoteResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
@@ -72,9 +64,8 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     private static final Logger LOG = LoggerFactory.getLogger(RemoteResourceTokenServices.class);
     private static final GrantedAuthority DEFAULT_USER_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
 
-    private String checkTokenEndpointUrl;
-    private String tokenParameterName = "access_token";
-    private HttpMethod method = POST;
+    private String tokenInfoEndpointUrl;
+    private String tokenParameterName = "token";
     private RestTemplate restTemplate;
     private boolean decorateErrorHandler = true;
 
@@ -82,24 +73,22 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     
     public void afterPropertiesSet() {
         Assert.notNull(restTemplate, "restTemplate must not be null");
-        Assert.hasText(checkTokenEndpointUrl, "checkTokenEndpointUrl must not be blank");
+        Assert.hasText(tokenInfoEndpointUrl, "tokenInfoEndpointUrl must not be blank");
 
         if (decorateErrorHandler) {
             restTemplate.setErrorHandler(new TokenValidationErrorHandler(restTemplate.getErrorHandler()));
         }
-        if (method == GET) {
-            //add query parameter with placeholder for token value
-            checkTokenEndpointUrl = UriComponentsBuilder.fromUriString(checkTokenEndpointUrl)
-                    .queryParam(tokenParameterName, "{value}")
-                    .build().toUriString();
-        }
+        //add query parameter with placeholder for token value
+        tokenInfoEndpointUrl = UriComponentsBuilder.fromUriString(tokenInfoEndpointUrl)
+                .queryParam(tokenParameterName, "{value}")
+                .build().toUriString();
     }
 
 
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException {
-        LOG.debug("Checking access token {} on authorization server: {}", accessToken, checkTokenEndpointUrl);
+        LOG.debug("Verifying access token {} on authorization server: {}", accessToken, tokenInfoEndpointUrl);
 
-        TokenInfo tokenInfo = requestTokenInfo(checkTokenEndpointUrl, method, accessToken);
+        TokenInfo tokenInfo = restTemplate.getForObject(tokenInfoEndpointUrl, TokenInfo.class, accessToken);
 
         LOG.debug("Server returned: {}", tokenInfo);
 
@@ -143,25 +132,6 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
         return new UsernamePasswordAuthenticationToken(tokenInfo.getUserId(), null, authorities);
     }
 
-    private TokenInfo requestTokenInfo(String path, HttpMethod method, String accessToken) {
-        switch (method) {
-            case GET:
-                return restTemplate.getForObject(path, TokenInfo.class, accessToken);
-
-            case POST:
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-                MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-                formData.add(tokenParameterName, accessToken);
-
-                return restTemplate.postForObject(path, new HttpEntity<>(formData, headers), TokenInfo.class);
-
-            default:
-                throw new IllegalArgumentException("Unsupported method " + method);
-        }
-    }
-
 
     //////////  Accessors  //////////
 
@@ -169,18 +139,16 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
      * URL of the resource at OAuth2 authorization server that will be used to
      * obtain authentication info for Access Tokens received from clients.
      *
-     * @param checkTokenEndpointUrl URL of the Check Token Endpoint
+     * @param tokenInfoEndpointUrl URL of the TokenInfo Endpoint
      */
     @Required
-    public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
-        this.checkTokenEndpointUrl = checkTokenEndpointUrl;
+    public void setTokenInfoEndpointUrl(String tokenInfoEndpointUrl) {
+        this.tokenInfoEndpointUrl = tokenInfoEndpointUrl;
     }
 
     /**
-     * Name of URL query parameter (GET) or request body attribute (POST)
-     * that holds Access Token value. Default is <tt>access_token</tt>.
-     *
-     * @param name
+     * Name of URL query parameter that holds Access Token value.
+     * Default is <tt>access_token</tt>.
      */
     public void setTokenParameterName(String name) {
         Assert.isTrue(name != null && name.matches("[a-zA-Z0-9\\-_]+"),
@@ -189,22 +157,9 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     }
 
     /**
-     * Which HTTP method use to request authentication info for Access Token at
-     * Check Token Endpoint? Default is POST.
-     *
-     * @param method GET or POST
-     */
-    public void setMethod(HttpMethod method) {
-        Assert.isTrue(method == GET || method == POST, "Method should be GET or POST");
-        this.method = method;
-    }
-
-    /**
      * Instance of {@link RestTemplate}, or {@link org.springframework.security.oauth2.client.OAuth2RestTemplate}
-     * for protected Check Token Endpoint (usually <tt>client_credentials</tt>
+     * for protected TokenInfo Endpoint (usually <tt>client_credentials</tt>
      * grant is used).
-     *
-     * @param restTemplate
      */
     @Required
     public void setRestTemplate(RestTemplate restTemplate) {
