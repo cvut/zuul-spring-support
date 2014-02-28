@@ -23,6 +23,8 @@
  */
 package cz.cvut.zuul.support.spring.provider;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
@@ -32,126 +34,120 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
+import static lombok.AccessLevel.NONE;
+
 /**
  * {@code SecurityBuilder} used to create a {@link RemoteResourceTokenServices}.
  */
-public class RemoteResourceTokenServicesBuilder implements SecurityBuilder<RemoteResourceTokenServices> {
+@Setter @Accessors(fluent=true)
+public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder<RemoteResourceTokenServices> {
 
-    private RemoteResourceTokenServices tokenServices = new RemoteResourceTokenServices();
-    private ClientCredentialsResourceDetails resourceDetails;
-    private RestTemplate restTemplate;
-    private boolean secured = false;
+    private final RemoteResourceTokenServicesBuilder parent = this;
 
+    private @Setter(NONE) ClientCredentialsResourceDetails resourceDetails;
 
     /**
      * URL of the resource at OAuth2 authorization server that will be used to
      * obtain authentication info for Access Tokens received from clients.
      */
-    public RemoteResourceTokenServicesBuilder tokenInfoEndpointUri(String tokenInfoEndpointUri) {
-        tokenServices.setTokenInfoEndpointUrl(tokenInfoEndpointUri);
-        return this;
-    }
+    private String tokenInfoEndpointUri;
 
     /**
      * Name of URL query parameter (GET) or request body attribute (POST)
-     * that holds Access Token value. Default is <tt>access_token</tt>.
+     * that holds Access Token value. Default is <tt>token</tt>.
      */
-    public RemoteResourceTokenServicesBuilder tokenParameterName(String parameterName) {
-        tokenServices.setTokenParameterName(parameterName);
-        return this;
-    }
+    private String tokenParameterName = "token";
 
     /**
      * Instance of {@link RestTemplate}, or {@link org.springframework.security.oauth2.client.OAuth2RestTemplate}
-     * to access TokenInfo Endpoint. If provided then {@link #secured()} will be ignored.
+     * to access TokenInfo Endpoint. This cannot be used along with {@link #secured()}.
      */
-    public RemoteResourceTokenServicesBuilder restTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-        return this;
-    }
+    private RestTemplate restTemplate;
+
 
     /**
-     * Configure OAuth 2.0 parameters for a secured TokenInfo resource.
+     * Configure OAuth 2.0 parameters for a secured TokenInfo endpoint.
+     * This cannot be used when the {@link #restTemplate(RestTemplate) restTemplate}
+     * is specified.
      */
     public ResourceDetailsBuilder secured() {
-        this.secured = true;
         return new ResourceDetailsBuilder();
     }
 
     public RemoteResourceTokenServices build() {
-        if (secured) {
-            Assert.hasText(resourceDetails.getClientId(), "A clientId must be supplied");
-            Assert.hasText(resourceDetails.getClientSecret(), "A clientSecret must be supplied");
-            Assert.hasText(resourceDetails.getAccessTokenUri(), "An accessTokenUri must be supplied");
+        if (resourceDetails != null && restTemplate != null) {
+            throw new IllegalStateException("secured() cannot be used along with custom restTemplate");
         }
 
         if (restTemplate == null) {
-            restTemplate = secured ? new OAuth2RestTemplate(resourceDetails) : new RestTemplate();
+            restTemplate = resourceDetails != null ? new OAuth2RestTemplate(resourceDetails) : new RestTemplate();
         }
-        tokenServices.setRestTemplate(restTemplate);
-        tokenServices.afterPropertiesSet();
+        RemoteResourceTokenServices services = new RemoteResourceTokenServices();
+        services.setTokenInfoEndpointUrl(tokenInfoEndpointUri);
+        services.setTokenParameterName(tokenParameterName);
+        services.setRestTemplate(restTemplate);
+        services.afterPropertiesSet();
 
-        return tokenServices;
+        return services;
     }
 
 
 
-    public class ResourceDetailsBuilder {
+    @Setter @Accessors(fluent=true)
+    public final class ResourceDetailsBuilder {
 
         private static final String DEFAULT_SCOPE = "urn:zuul:oaas:tokeninfo";
 
-        private ResourceDetailsBuilder() {
-            resourceDetails = new ClientCredentialsResourceDetails();
-            resourceDetails.setScope(Arrays.asList(DEFAULT_SCOPE));
-        }
+        private @Setter(NONE) String[] scope = new String[]{ DEFAULT_SCOPE };
 
         /**
          * The client ID to access the OAAS.
          */
-        public ResourceDetailsBuilder clientId(String clientId) {
-            resourceDetails.setClientId(clientId);
-            return this;
-        }
+        private String clientId;
 
         /**
          * The client secret to access the OAAS.
          */
-        public ResourceDetailsBuilder clientSecret(String clientSecret) {
-            resourceDetails.setClientSecret(clientSecret);
-            return this;
-        }
+        private String clientSecret;
+
+        /**
+         * The URL to use to obtain an access token for communication with the OAAS.
+         */
+        private String accessTokenUri;
+
+        /**
+         * The scheme to use to authenticate. The default value is "header".
+         */
+        private AuthenticationScheme clientAuthenticationScheme = AuthenticationScheme.header;
+
 
         /**
          * The scope required by the OAAS to access the TokenInfo Endpoint.
          * The default scope is <tt>urn:zuul:oaas:tokeninfo</tt>.
          */
         public ResourceDetailsBuilder scope(String... scopes) {
-            resourceDetails.setScope(Arrays.asList(scopes));
-            return this;
-        }
-
-        /**
-         * The URL to use to obtain an access token for communication with the OAAS.
-         */
-        public ResourceDetailsBuilder accessTokenUri(String accessTokenUri) {
-            resourceDetails.setAccessTokenUri(accessTokenUri);
-            return this;
-        }
-
-        /**
-         * The scheme to use to authenticate. The default value is "header".
-         */
-        public ResourceDetailsBuilder clientAuthenticationScheme(AuthenticationScheme scheme) {
-            resourceDetails.setClientAuthenticationScheme(scheme);
+            this.scope = scopes;
             return this;
         }
 
         public RemoteResourceTokenServicesBuilder and() {
-            return RemoteResourceTokenServicesBuilder.this;
+            Assert.hasText(clientId, "A clientId must be supplied");
+            Assert.hasText(clientSecret, "A clientSecret must be supplied");
+            Assert.hasText(accessTokenUri, "An accessTokenUri must be supplied");
+
+            ClientCredentialsResourceDetails resource = new ClientCredentialsResourceDetails();
+            resource.setClientId(clientId);
+            resource.setClientSecret(clientSecret);
+            resource.setScope(Arrays.asList(scope));
+            resource.setAccessTokenUri(accessTokenUri);
+            resource.setClientAuthenticationScheme(clientAuthenticationScheme);
+            parent.resourceDetails = resource;
+
+            return parent;
         }
 
         public RemoteResourceTokenServices build() {
-            return RemoteResourceTokenServicesBuilder.this.build();
+            return and().build();
         }
     }
 }
