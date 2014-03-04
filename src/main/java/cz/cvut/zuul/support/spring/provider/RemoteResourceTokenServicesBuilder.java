@@ -23,10 +23,14 @@
  */
 package cz.cvut.zuul.support.spring.provider;
 
+import cz.jirutka.spring.http.client.cache.CachingHttpRequestInterceptor;
+import cz.jirutka.spring.http.client.cache.SoftReferenceSynchronizedLruCache;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.springframework.cache.Cache;
 import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.util.Assert;
@@ -43,8 +47,8 @@ import static lombok.AccessLevel.NONE;
 public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder<RemoteResourceTokenServices> {
 
     private final RemoteResourceTokenServicesBuilder parent = this;
-
-    private @Setter(NONE) ClientCredentialsResourceDetails resourceDetails;
+    private final ResourceDetailsBuilder resourceBuilder = new ResourceDetailsBuilder();
+    private final CachingBuilder cachingBuilder = new CachingBuilder();
 
     /**
      * URL of the resource at OAuth2 authorization server that will be used to
@@ -71,17 +75,30 @@ public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder
      * is specified.
      */
     public ResourceDetailsBuilder secured() {
-        return new ResourceDetailsBuilder();
+        return resourceBuilder;
+    }
+
+    /**
+     * Configure built-in HTTP caching.
+     */
+    public CachingBuilder httpCache() {
+        return cachingBuilder;
     }
 
     public RemoteResourceTokenServices build() {
-        if (resourceDetails != null && restTemplate != null) {
+        if (resourceBuilder.clientId != null && restTemplate != null) {
             throw new IllegalStateException("secured() cannot be used along with custom restTemplate");
         }
 
         if (restTemplate == null) {
-            restTemplate = resourceDetails != null ? new OAuth2RestTemplate(resourceDetails) : new RestTemplate();
+            restTemplate = resourceBuilder.clientId != null
+                    ? new OAuth2RestTemplate(resourceBuilder.buildResourceDetails())
+                    : new RestTemplate();
         }
+        if (!cachingBuilder.disable) {
+            restTemplate.getInterceptors().add(cachingBuilder.buildInterceptor());
+        }
+
         RemoteResourceTokenServices services = new RemoteResourceTokenServices();
         services.setTokenInfoEndpointUrl(tokenInfoEndpointUri);
         services.setTokenParameterName(tokenParameterName);
@@ -131,6 +148,14 @@ public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder
         }
 
         public RemoteResourceTokenServicesBuilder and() {
+            return parent;
+        }
+
+        public RemoteResourceTokenServices build() {
+            return and().build();
+        }
+
+        private OAuth2ProtectedResourceDetails buildResourceDetails() {
             Assert.hasText(clientId, "A clientId must be supplied");
             Assert.hasText(clientSecret, "A clientSecret must be supplied");
             Assert.hasText(accessTokenUri, "An accessTokenUri must be supplied");
@@ -141,13 +166,53 @@ public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder
             resource.setScope(Arrays.asList(scope));
             resource.setAccessTokenUri(accessTokenUri);
             resource.setClientAuthenticationScheme(clientAuthenticationScheme);
-            parent.resourceDetails = resource;
 
+            return resource;
+        }
+    }
+
+
+    @Setter @Accessors(fluent=true)
+    public final class CachingBuilder {
+
+        private @Setter(NONE) boolean disable = false;
+
+        /**
+         * Specify the cache backend to use.
+         */
+        private Cache cache;
+
+        /**
+         * Specify capacity of a default in-memory cache, i.e. how many
+         * responses to keep. The default is 64.
+         *
+         * <p>When {@link #cache(Cache)} is specified, then this value is
+         * ignored.</p>
+         */
+        private int capacity = 64;
+
+
+        /**
+         * Disable built-in HTTP caching.
+         */
+        public RemoteResourceTokenServicesBuilder disable() {
+            disable = true;
+            return parent;
+        }
+
+        public RemoteResourceTokenServicesBuilder and() {
             return parent;
         }
 
         public RemoteResourceTokenServices build() {
             return and().build();
+        }
+
+        private CachingHttpRequestInterceptor buildInterceptor() {
+            if (cache == null) {
+                cache = new SoftReferenceSynchronizedLruCache("tokens-http-cache", capacity);
+            }
+            return new CachingHttpRequestInterceptor(cache, false, 2048);
         }
     }
 }
