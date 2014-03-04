@@ -24,6 +24,7 @@
 package cz.cvut.zuul.support.spring.provider
 
 import org.codehaus.jackson.map.ObjectMapper
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.client.MockRestServiceServer
@@ -99,6 +100,24 @@ class RemoteResourceTokenServicesTest extends Specification {
             mockServer.verify()
     }
 
+    def 'should return authentication when response has Age header < expires_in'() {
+        setup:
+            mockServer.expect( anything() )
+                    .andRespond( withSuccess(tokenInfoAsJson(), APPLICATION_JSON).headers(headers(Age: 59)) )
+        expect:
+            service.loadAuthentication('meh')
+    }
+
+    def 'should throw exception when response has Age header > expires_in'() {
+        setup:
+            mockServer.expect( anything() )
+                    .andRespond( withSuccess(tokenInfoAsJson(), APPLICATION_JSON).headers(headers(Age: 61)) )
+        when:
+            service.loadAuthentication('meh')
+        then:
+            thrown InvalidClientTokenException
+    }
+
 
     def tokenInfo(boolean clientOnly = false, String clientId = 'client123') {
         new TokenInfo(
@@ -123,5 +142,13 @@ class RemoteResourceTokenServicesTest extends Specification {
         )
         service.afterPropertiesSet()
         service
+    }
+
+    def headers(kwargs = [:]) {
+        def headers = new HttpHeaders()
+        kwargs.each { key, val ->
+            headers.add(key, val?.toString())
+        }
+        headers
     }
 }

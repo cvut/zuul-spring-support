@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -62,7 +64,9 @@ import static java.util.Arrays.asList;
 public class RemoteResourceTokenServices implements ResourceServerTokenServices, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoteResourceTokenServices.class);
+
     private static final GrantedAuthority DEFAULT_USER_AUTHORITY = new SimpleGrantedAuthority("ROLE_USER");
+    private static final String AGE_HEADER = "Age";
 
     private String tokenInfoEndpointUrl;
     private String tokenParameterName = "token";
@@ -88,7 +92,7 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException {
         LOG.debug("Verifying access token {} on authorization server: {}", accessToken, tokenInfoEndpointUrl);
 
-        TokenInfo tokenInfo = restTemplate.getForObject(tokenInfoEndpointUrl, TokenInfo.class, accessToken);
+        TokenInfo tokenInfo = requestTokenInfo(accessToken);
 
         LOG.debug("Server returned: {}", tokenInfo);
 
@@ -130,6 +134,20 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
             authorities = new HashSet<>(asList(DEFAULT_USER_AUTHORITY));
         }
         return new UsernamePasswordAuthenticationToken(tokenInfo.getUserId(), null, authorities);
+    }
+
+    private TokenInfo requestTokenInfo(String token) {
+        ResponseEntity<TokenInfo> response = restTemplate.getForEntity(tokenInfoEndpointUrl, TokenInfo.class, token);
+
+        // if token was in cache, then we must ensure if it's still valid
+        if (response.getHeaders().containsKey(AGE_HEADER)) {
+            long age = Long.parseLong(response.getHeaders().getFirst(AGE_HEADER));
+
+            if (response.getBody().getExpiresIn() < age) {
+                throw new InvalidClientTokenException("Access token has expired: " + token);
+            }
+        }
+        return response.getBody();
     }
 
 
