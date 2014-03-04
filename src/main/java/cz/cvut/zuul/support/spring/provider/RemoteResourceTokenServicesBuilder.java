@@ -68,6 +68,15 @@ public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder
      */
     private RestTemplate restTemplate;
 
+    /**
+     * With default setting, this class decorates {@linkplain org.springframework.web.client.ResponseErrorHandler}
+     * from the given RestTemplate with our {@link TokenValidationErrorHandler}.
+     *
+     * If you want to use your custom ErrorHandler instead, set this to <tt>false</tt>
+     * and ErrorHandler from the RestTemplate will be used as is.
+     */
+    private boolean decorateErrorHandler = true;
+
 
     /**
      * Configure OAuth 2.0 parameters for a secured TokenInfo endpoint.
@@ -103,6 +112,7 @@ public final class RemoteResourceTokenServicesBuilder implements SecurityBuilder
         services.setTokenInfoEndpointUrl(tokenInfoEndpointUri);
         services.setTokenParameterName(tokenParameterName);
         services.setRestTemplate(restTemplate);
+        services.setDecorateErrorHandler(decorateErrorHandler);
         services.afterPropertiesSet();
 
         return services;
