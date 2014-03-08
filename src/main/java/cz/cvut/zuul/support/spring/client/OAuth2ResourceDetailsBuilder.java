@@ -85,8 +85,9 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
     }
 
     /**
-     * The name of the bearer token. The default is "access_token", which is according to the spec, but some providers
-     * (e.g. Facebook) don't conform to the spec.)
+     * The name of the bearer token. The default is "access_token", which is
+     * according to the spec, but some providers (e.g. Facebook) don't conform
+     * to the spec.)
      */
     public B tokenName(String tokenName) {
         resourceDetails.setTokenName(tokenName);
@@ -130,7 +131,7 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
 
 
 
-    abstract static class UserAuthorizationResourceBuilder <B extends UserAuthorizationResourceBuilder<B>>
+    abstract static class UserAuthorizationResourceBuilder<B extends UserAuthorizationResourceBuilder<B>>
             extends OAuth2ResourceDetailsBuilder<B> {
 
         UserAuthorizationResourceBuilder(AbstractRedirectResourceDetails resourceDetails) {
@@ -138,8 +139,8 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
         }
 
         /**
-         * Flag to signal that the current URI (if set) in the request should be used in preference to the pre-established
-         * redirect URI.
+         * Flag to signal that the current URI (if set) in the request should
+         * be used in preference to the pre-established redirect URI.
          */
         public B useCurrentUri(boolean useCurrentUri) {
             resourceDetails().setUseCurrentUri(useCurrentUri);
@@ -155,8 +156,9 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
         }
 
         /**
-         * The redirect URI that has been pre-established with the server. If present, the redirect URI will be omitted from
-         * the user authorization request because the server doesn't need to know it.
+         * The redirect URI that has been pre-established with the server.
+         * If present, the redirect URI will be omitted from the user
+         * authorization request because the server doesn't need to know it.
          */
         public B preEstablishedRedirectUri(String preEstablishedRedirectUri) {
             resourceDetails().setPreEstablishedRedirectUri(preEstablishedRedirectUri);
@@ -185,7 +187,7 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
     }
 
 
-    abstract static class ClientAuthenticationResourceBuilder <B extends ClientAuthenticationResourceBuilder<B>>
+    abstract static class ClientAuthenticationResourceBuilder<B extends ClientAuthenticationResourceBuilder<B>>
             extends OAuth2ResourceDetailsBuilder<B> {
 
         ClientAuthenticationResourceBuilder(BaseOAuth2ProtectedResourceDetails resourceDetails) {
@@ -226,7 +228,8 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
 
 
 
-    public static class AuthorizationCodeResourceBuilder extends UserAuthorizationResourceBuilder<AuthorizationCodeResourceBuilder> {
+    public static class AuthorizationCodeResourceBuilder
+            extends UserAuthorizationResourceBuilder<AuthorizationCodeResourceBuilder> {
 
         AuthorizationCodeResourceBuilder() {
             super(new AuthorizationCodeResourceDetails());
@@ -273,7 +276,8 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
     }
 
 
-    public static class ClientCredentialsResourceBuilder extends ClientAuthenticationResourceBuilder<ClientCredentialsResourceBuilder> {
+    public static class ClientCredentialsResourceBuilder
+            extends ClientAuthenticationResourceBuilder<ClientCredentialsResourceBuilder> {
 
         ClientCredentialsResourceBuilder() {
             super(new ClientCredentialsResourceDetails());
@@ -281,7 +285,8 @@ abstract class OAuth2ResourceDetailsBuilder<B extends OAuth2ResourceDetailsBuild
     }
 
 
-    public static class ResourceOwnerPasswordResourceBuilder extends ClientAuthenticationResourceBuilder<ResourceOwnerPasswordResourceBuilder> {
+    public static class ResourceOwnerPasswordResourceBuilder
+            extends ClientAuthenticationResourceBuilder<ResourceOwnerPasswordResourceBuilder> {
 
         ResourceOwnerPasswordResourceBuilder() {
             super(new ResourceOwnerPasswordResourceDetails());

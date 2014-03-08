@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,7 +40,6 @@ import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.util.Assert;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -74,7 +72,7 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     private boolean decorateErrorHandler = true;
 
 
-    
+
     public void afterPropertiesSet() {
         Assert.notNull(restTemplate, "restTemplate must not be null");
         Assert.hasText(tokenInfoEndpointUrl, "tokenInfoEndpointUrl must not be blank");
@@ -185,7 +183,7 @@ public class RemoteResourceTokenServices implements ResourceServerTokenServices,
     }
 
     /**
-     * With default setting, this class decorates {@linkplain ResponseErrorHandler}
+     * With default setting, this class decorates {@linkplain org.springframework.web.client.ResponseErrorHandler}
      * from the given RestTemplate with our {@link TokenValidationErrorHandler}.
      *
      * If you want to use your custom ErrorHandler instead, set this to <tt>false</tt>
