@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,11 +13,31 @@
     <!--//////////////////// ABOUT ////////////////////-->
 
     <artifactId>zuul-spring-support</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Zuul Spring Support</name>
     <description>Support classes for OAuth resource providers and clients based on Spring Security OAuth2.</description>
+    <url>https://github.com/cvut/zuul-spring-support</url>
+    <inceptionYear>2013</inceptionYear>
+
+    <developers>
+        <developer>
+            <name>Jakub Jirutka</name>
+            <email>jirutjak@fit.cvut.cz</email>
+            <organization>CTU in Prague</organization>
+            <organizationUrl>http://www.cvut.cz</organizationUrl>
+        </developer>
+    </developers>
+
+
+    <!--//////////////////// DISTRIBUTION ////////////////////-->
+
+    <licenses>
+        <license>
+            <name>MIT</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 
     <scm>
         <url>https://github.com/cvut/zuul-spring-support</url>
@@ -30,6 +48,22 @@
         <system>GitHub</system>
         <url>https://github.com/cvut/zuul-spring-support/issues</url>
     </issueManagement>
+
+    <ciManagement>
+        <system>Travis</system>
+        <url>https://travis-ci.org/cvut/zuul-spring-support</url>
+    </ciManagement>
+
+
+    <!--//////////////////// REPOSITORIES ////////////////////-->
+
+    <repositories>
+        <repository>
+            <id>cvut-local-repos</id>
+            <name>CVUT Repository Local</name>
+            <url>http://repository.fit.cvut.cz/maven/local-repos/</url>
+        </repository>
+    </repositories>
 
 
     <!--//////////////////// DEPENDENCIES ////////////////////-->
